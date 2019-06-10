@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: avmservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: avmservice
+  template:
+    metadata:
+      labels:
+        app: avmservice
+    spec:
+      containers:
+      - name: server
+        image: avmservice
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"

@@ -1,0 +1,105 @@
+openapi: 3.0.0
+info:
+  description: API for obtaining an AVM value
+  version: '1.0'
+  title: AVM Adapter
+tags:
+  - name: avm-controller
+    description: AVM Controller
+paths:
+  /:
+    post:
+      tags:
+        - avm-controller
+      summary: getAvmScore
+      operationId: getAvmScoreUsingPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AVMRequest'
+        description: avmRequest
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AVMResponse'
+        '201':
+          description: Created
+        '400':
+          description: Error getting the data          
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Server error          
+      deprecated: false
+components:
+  requestBodies:
+    handleUsingGET_2Body:
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+      description: body
+  schemas:
+    AVMRequest:
+      type: object
+      properties:
+        address:
+          $ref: '#/components/schemas/Address'
+      title: AVMRequest
+    AVMResponse:
+      type: object
+      properties:
+        additional_data:
+          type: object
+          additionalProperties:
+            type: string
+        confidence_score:
+          type: string
+        error_message:
+          type: string
+        property_high:
+          type: string
+        property_low:
+          type: string
+        property_value:
+          type: string
+        report_details:
+          $ref: '#/components/schemas/ReportDetails'
+        reported_address:
+          $ref: '#/components/schemas/Address'
+      title: AVMResponse
+    Address:
+      type: object
+      properties:
+        city:
+          type: string
+        state:
+          type: string
+        street_address:
+          type: string
+        zip:
+          type: string
+      title: Address
+    ReportDetails:
+      type: object
+      properties:
+        report_date:
+          type: string
+        report_number:
+          type: string
+        value_date:
+          type: string
+        value_time:
+          type: string
+      title: ReportDetails

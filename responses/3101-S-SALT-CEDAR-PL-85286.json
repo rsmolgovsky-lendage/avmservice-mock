@@ -1,0 +1,22 @@
+{
+    "reported_address": {
+        "street_address": "3101 S SALT CEDAR PL",
+        "city": "CHANDLR",
+        "state": "AZ",
+        "zip": "85286"
+    },
+    "property_value": "492000",
+    "property_high": "513000",
+    "property_low": "471000",
+    "confidence_score": "96",
+    "report_details": {
+        "value_date": "02-APR-2019",
+        "value_time": "08:23 PM",
+        "report_date": "02-APR-2019",
+        "report_number": "491972949"
+    },
+    "additional_data": {
+        "avm_transaction_id": "5568359_6338079",
+        "final_status": "SUCCESSFUL"
+    }
+}

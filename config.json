@@ -1,0 +1,8 @@
+{
+    "groupId":"com.lendage.api",
+    "artifactId":"avmservice",
+    "basePackage":"com.lendage.api.avmservice",
+    "modelPackage" : "com.lendage.api.avmservice.model",
+    "apiPackage" : "com.lendage.api.avmservice.api",
+    "configPackage":"com.lendage.api.avmservice.config"
+}
