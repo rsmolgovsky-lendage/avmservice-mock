@@ -50,6 +50,13 @@ jobs:
     steps:
       # run tests!
       - run: mvn integration-test
+  test2:
+    executor:
+      name: run-executor
+      workdir: .
+    steps:
+      # run tests!
+      - run: mvn integration-test
 workflows:
   version: 2.1
   build_and_test:
@@ -58,3 +65,5 @@ workflows:
       - test:
           requires:
             - build
+      - test2
+
