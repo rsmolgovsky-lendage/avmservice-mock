@@ -18,7 +18,7 @@ jobs:
   build:
     executor:
       name: run-executor
-      workdir: .
+      workdir: ~/repo
 
 #    working_directory: ~/repo
 
@@ -45,7 +45,7 @@ jobs:
   test:
     executor:
       name: run-executor
-      workdir: .
+      workdir: ~/repo
     # working_directory: /tmp
     steps:
       # run tests!
@@ -53,7 +53,7 @@ jobs:
   test2:
     executor:
       name: run-executor
-      workdir: .
+      workdir: ~/repo
     steps:
       # run tests!
       - run: mvn integration-test
