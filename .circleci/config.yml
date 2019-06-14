@@ -18,7 +18,7 @@ jobs:
   build:
     executor:
       name: run-executor
-      workdir: ~/repo
+      workdir: .
 
 #    working_directory: ~/repo
 
@@ -45,7 +45,7 @@ jobs:
   test:
     executor:
       name: run-executor
-      workdir: /tmp
+      workdir: .
     # working_directory: /tmp
     steps:
       # run tests!
