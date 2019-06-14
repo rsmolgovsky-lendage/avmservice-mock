@@ -72,13 +72,22 @@ jobs:
       - run: mvn integration-test
 workflows:
   version: 2.1
-  build_and_test:
-    jobs:
-      - build
-      - test:
-          requires:
-            - build
-      - test2:
-          requires:
-            - build
+  workflow1:
+    build_and_test:
+      jobs:
+        - build
+        - test:
+            requires:
+              - build
+        - test2:
+            requires:
+              - build
+  workflow2:
+    build_and_test:
+      jobs:
+        - build
+        - test:
+            requires:
+              - build
+
 
