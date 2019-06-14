@@ -46,14 +46,14 @@ jobs:
     executor:
       name: run-executor
  #     workdir: /tmp
-       working_directory: /tmp
+    working_directory: /tmp
     steps:
       # run tests!
       - run: mvn integration-test
   test2:
     executor:
       name: run-executor
-      working_directory: /tmp
+    working_directory: /tmp
 #      workdir: /tmp
     steps:
       # run tests!
