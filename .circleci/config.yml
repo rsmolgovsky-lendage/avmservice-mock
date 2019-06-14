@@ -50,7 +50,7 @@ jobs:
     executor:
       name: run-executor
  #     workdir: /tmp
-    working_directory: ~
+    working_directory: ~/repo
     steps:
       - restore_cache:
             keys:
