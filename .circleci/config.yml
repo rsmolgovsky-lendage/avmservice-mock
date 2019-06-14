@@ -41,8 +41,11 @@ jobs:
       - save_cache:
           paths:
             - ~/.m2
-            - ~/repo
           key: v1-dependencies-{{ checksum "pom.xml" }}
+      - save_cache:
+          paths:
+            - ~/repo
+          key: checkout-dir
   test:
     executor:
       name: run-executor
@@ -51,7 +54,7 @@ jobs:
     steps:
       - restore_cache:
             keys:
-              - v1-dependencies-{{ checksum "pom.xml" }}
+              - checkout-dir
       # run tests!
       - run: ls ~
       - run: ls ~/repo
