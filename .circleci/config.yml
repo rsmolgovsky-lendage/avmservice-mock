@@ -9,12 +9,18 @@ executors:
     docker:
       # specify the version you desire here
       - image: circleci/openjdk:8-jdk
+    parameters:
+      workdir:
+        type: string
+    working_directory: << parameters.workdir >>
 
 jobs:
   build:
-    executor: run-executor
+    executor:
+      name: run-executor
+      workdir: ~/repo
 
-    working_directory: ~/repo
+#    working_directory: ~/repo
 
     environment:
       # Customize the JVM maximum heap limit
@@ -37,8 +43,10 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
   test:
-    executor: run-executor
-    working_directory: /tmp
+    executor:
+      name: run-executor
+      workdir: /tmp
+    # working_directory: /tmp
     steps:
       # run tests!
       - run: mvn integration-test
