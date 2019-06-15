@@ -36,9 +36,7 @@ jobs:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-
       - run: mvn dependency:go-offline
-
       - save_cache:
           paths:
             - ~/.m2
@@ -51,7 +49,6 @@ jobs:
     executor:
       name: run-executor
       workdir: ~/repo
-#    working_directory: ~/repo
     steps:
       - restore_cache:
             keys:
@@ -70,6 +67,12 @@ jobs:
             keys:
               - checkout-dir
       - run: mvn integration-test
+  test3:
+    executor:
+      name: run-executor
+      workdir: ~/repo
+    steps:
+      - run: mvn integration-test
 workflows:
   version: 2
   build_and_test:
@@ -83,8 +86,9 @@ workflows:
             - build
   build_and_test2:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
+      - test3:
+          pre-steps"
+            - restore_cache:
+              keys:
+                - checkout-dir
 
