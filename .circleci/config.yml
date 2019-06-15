@@ -87,8 +87,8 @@ workflows:
   build_and_test2:
     jobs:
       - test3:
-          pre-steps"
+          pre-steps:
             - restore_cache:
-              keys:
-                - checkout-dir
+                keys:
+                  - checkout-dir
 
