@@ -85,6 +85,9 @@ workflows:
   build_and_test2:
     jobs:
       - test3:
+          filters:
+            branches:
+                only: master
           pre-steps:
             - restore_cache:
                 keys:
