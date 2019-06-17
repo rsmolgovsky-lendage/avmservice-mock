@@ -72,24 +72,29 @@ jobs:
     steps:
       - run: mvn integration-test
 workflows:
-  version: 2
+  version: 2.1
   build_and_test:
     jobs:
       - build
       - test:
           requires:
             - build
+        filters:
+            branches:
+              ignore: master
       - test2:
           requires:
             - build
+        filters:
+          branches:
+            ignore: master
   build_and_test2:
     jobs:
+      - filters:
+          branches:
+            only: master
       - test3:
-          filters:
-            branches:
-                only: master
           pre-steps:
             - restore_cache:
-                keys:
-                  - checkout-dir
+                key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
 
