@@ -85,16 +85,16 @@ workflows:
       - test2:
           requires:
             - build
-        filters:
-          branches:
-            ignore: master
+          filters:
+            branches:
+              ignore: master
   build_and_test2:
     jobs:
-      - filters:
-          branches:
-            only: master
       - test3:
           pre-steps:
             - restore_cache:
                 key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          filters:
+              branches:
+                only: master
 
