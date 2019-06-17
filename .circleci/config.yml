@@ -44,15 +44,14 @@ jobs:
       - save_cache:
           paths:
             - ~/repo
-          key: checkout-dir
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
   test:
     executor:
       name: run-executor
       workdir: ~/repo
     steps:
       - restore_cache:
-            keys:
-              - checkout-dir
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       # run tests!
       - run: ls ~
       - run: ls ~/repo
@@ -64,8 +63,7 @@ jobs:
     steps:
       # run tests!
       - restore_cache:
-            keys:
-              - checkout-dir
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: mvn integration-test
   test3:
     executor:
