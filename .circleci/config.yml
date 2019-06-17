@@ -79,7 +79,7 @@ workflows:
       - test:
           requires:
             - build
-        filters:
+          filters:
             branches:
               ignore: master
       - test2:
