@@ -55,7 +55,7 @@ jobs:
       # run tests!
       - run: ls ~
       - run: ls ~/repo
-      - run : mvn test
+      - run : mvn clean test
       - store_artifacts:
             path:  target
   test2:
