@@ -55,7 +55,9 @@ jobs:
       # run tests!
       - run: ls ~
       - run: ls ~/repo
-      - run: mvn integration-test
+      - run : mvn test
+      - store_artifacts:
+            path:  target
   test2:
     executor:
       name: run-executor
@@ -88,13 +90,21 @@ workflows:
           filters:
             branches:
               ignore: master
-  build_and_test2:
+  merge_to_master_with_approval:
     jobs:
+      - hold: # <<< A job that will require manual approval in the CircleCI web application.
+          type: approval # <<< This key-value pair will set your workflow to a status of "On Hold"
+          filters:
+            branches:
+              only: master
       - test3:
           pre-steps:
             - restore_cache:
                 key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          requires:
+            - hold
           filters:
               branches:
                 only: master
+
 
