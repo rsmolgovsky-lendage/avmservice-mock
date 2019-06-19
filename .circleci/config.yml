@@ -8,7 +8,7 @@ executors:
   main-executor:
     docker:
       # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
+      - image: maven:3.3.9-jdk-8
     working_directory: ~/repo
 
     environment:
@@ -40,6 +40,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - setup_remote_docker
       - run: docker build -t ${APP_TYPE}@${APP_NAME} .
 
 
