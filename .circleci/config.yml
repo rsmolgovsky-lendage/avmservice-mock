@@ -11,6 +11,10 @@ executors:
       - image: maven:3.3.9-jdk-8
     working_directory: ~/repo
 
+    environment:
+      APP_TYPE: service
+      APP_NAME: avm-mock
+
 jobs:
   build:
     executor: main-executor
@@ -36,7 +40,10 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run: ls -all
+      - run: docker build -t ${APP_TYPE}001@${APP_NAME} .
+
+
+
 workflows:
   version: 2.1
   build_and_test:
