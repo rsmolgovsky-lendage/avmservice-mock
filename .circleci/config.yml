@@ -4,6 +4,44 @@
 #
 version: 2.1
 
+orbs:
+  inline_example:
+    jobs:
+      my_inline_job:
+        parameters:
+          greeting_name:
+            description:
+            type: string
+        executor: my_inline_executor
+        steps:
+          - my_inline_command:
+              greeting_name: <<parameters.greeting_name>>
+    commands:
+      my_inline_command:
+        parameters:
+          greeting_name:
+            type: string
+        steps:
+          - run: echo "Hello <<parameters.greeting_name>>, from the inline command"
+    executors:
+      my_inline_executor:
+        parameters:
+          version:
+            type: string
+            default: "2.4"
+        docker:
+          - image: maven:3.3.9-jdk-8
+
+commands:
+  hello:
+    description: Greet the user politely
+    parameters:
+      username:
+        type: string
+        description: A name of the user to greet
+    steps:
+      - run: "echo Hello << parameters.username >>"
+
 executors:
   main-executor:
     docker:
@@ -12,7 +50,7 @@ executors:
     working_directory: ~/repo
 
     environment:
-      APP_TYPE: service
+      APP_TYPE: adapter
       APP_NAME: avm-mock
 
 jobs:
@@ -57,10 +95,13 @@ workflows:
   version: 2.1
   build_and_test:
     jobs:
-      - build
-      - docker_image:
-          requires:
-            - build
+      - inline_example/my_inline_job:
+          name: hello
+          greeting_name: world
+#      - build
+#      - docker_image:
+#          requires:
+#            - build
 
 
 
