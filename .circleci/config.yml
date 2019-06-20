@@ -5,6 +5,7 @@
 version: 2.1
 
 orbs:
+  published_example: rsmolgovsky-circleci/test-orb@dev:1
   inline_example:
     jobs:
       my_inline_job:
@@ -88,8 +89,8 @@ jobs:
               tar -xz -C /tmp -f /tmp/docker-$VER.tgz
               mv /tmp/docker/* /usr/bin
       - run: docker build -t ${APP_TYPE}-${APP_NAME} .
-
-
+      - published_example/hello:
+          greeting_name: world2
 
 workflows:
   version: 2.1
