@@ -55,6 +55,11 @@ executors:
       APP_NAME: avm-mock
 
 jobs:
+  test_publish:
+    executor: main-executor
+    steps:
+      - published_example/hello:
+          username: world2
   build:
     executor: main-executor
     steps:
@@ -89,9 +94,6 @@ jobs:
               tar -xz -C /tmp -f /tmp/docker-$VER.tgz
               mv /tmp/docker/* /usr/bin
       - run: docker build -t ${APP_TYPE}-${APP_NAME} .
-      - published_example/hello:
-          greeting_name: world2
-
 workflows:
   version: 2.1
   build_and_test:
@@ -99,6 +101,7 @@ workflows:
       - inline_example/my_inline_job:
           name: hello
           greeting_name: world
+      - test_publish
 #      - build
 #      - docker_image:
 #          requires:
