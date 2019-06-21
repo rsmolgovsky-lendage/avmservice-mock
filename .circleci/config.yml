@@ -49,9 +49,21 @@ orbs:
           deployment-descriptor:
             description: A path to a deployment descriptor
             type: string
+          google-project-id:
+            description: The Google project ID to connect with via the gcloud CLI
+            type: string
+          registry-url:
+              description: The GCR registry URL from ['', us, eu, asia].gcr.io
+              type: string
+          image:
+              description: A name for your docker image
+              type: string
+          tag:
+              description: A docker image tag
+              type: string
         steps:
           - run: export REG_URL=<< parameters.registry-url >>
-          - run: export IMAGE_NAME=${<< parameters.image-name >>}
+          - run: export IMAGE_NAME=${<< parameters.image >>}
           - run: export TAG=<< parameters.tag >>
           - run: export G_PROJECT_ID=${<< parameters.google-project-id >>}
           - run: echo Values - ${REG_URL}, ${IMAGE_NAME}, ${TAG}, ${G_PROJECT_ID}
@@ -91,7 +103,7 @@ orbs:
             default: us.gcr.io
           image-name:
             description: A name for your docker image
-            type: string
+            type: env_var_name
             default: CIRCLE_PROJECT_REPONAME
           tag:
             description: A docker image tag
@@ -125,6 +137,10 @@ orbs:
           - publish-and-update:
               cluster: "<<parameters.cluster>>"
               deployment-descriptor: "<<parameters.deployment-descriptor>>"
+              registry-url: <<parameters.registry-url>>
+              google-project-id: <<parameters.google-project-id>>
+              image: ${<<parameters.image-name>>}
+              tag: <<parameters.tag>>
 workflows:
   version: 2.1
   deploy-service:
