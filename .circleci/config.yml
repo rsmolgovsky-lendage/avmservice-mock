@@ -88,7 +88,7 @@ orbs:
           image-name:
             description: A name for your docker image
             type: env_var_name
-            default: CIRCLE_PROJECT_REPONAME
+            default: GOOGLE_PROJECT_ID
           tag:
             description: A docker image tag
             type: string
