@@ -23,7 +23,9 @@ orbs:
           greeting_name:
             type: string
         steps:
-          - run: echo "Hello <<parameters.greeting_name>>, from the inline command"
+           - run: echo "Hello <<parameters.greeting_name>>, from the inline command"
+           - run: echo Project -  ${CIRCLE_PROJECT_REPONAME}
+           - run: echo SHA1 -  ${CIRCLE_SHA1}
     executors:
       my_inline_executor:
         parameters:

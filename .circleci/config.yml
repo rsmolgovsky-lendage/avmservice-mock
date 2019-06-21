@@ -5,109 +5,190 @@
 version: 2.1
 
 orbs:
-  published_example: rsmolgovsky-circleci/test-orb@dev:1
-  inline_example:
-    jobs:
-      my_inline_job:
-        parameters:
-          greeting_name:
-            description:
-            type: string
-        executor: my_inline_executor
-        steps:
-          - my_inline_command:
-              greeting_name: <<parameters.greeting_name>>
+  gck-management:
+    orbs:
+      gcloud: circleci/gcp-cli@1.0.6
+      gcr: circleci/gcp-gcr@0.0.2
+      k8s: circleci/kubernetes@0.1.0
     commands:
-      my_inline_command:
+      install:
+        description: "Install `gcloud` and `kubectl` if not already installed."
+        steps:
+          - gcloud/install
+          - k8s/install
+      init:
+        description: "Initialize the `gcloud` CLI."
+        steps:
+          - gcloud/initialize
+      rollout-image:
+        description: "Update a deployment's Docker image."
         parameters:
-          greeting_name:
+          cluster:
+            description: "The Kubernetes cluster name."
+            type: string
+          deployment:
+            description: "The Kubernetes deployment name."
+            type: string
+          container:
+            description: "The Kubernetes container name."
+            type: string
+          image:
+            description: A name for your docker image
             type: string
         steps:
-          - run: echo "Hello <<parameters.greeting_name>>, from the inline command"
-          - run: echo Project -  ${CIRCLE_PROJECT_REPONAME}
-          - run: echo SHA1 -  ${CIRCLE_SHA1}
-    executors:
-      my_inline_executor:
+          - run: |
+              gcloud container clusters get-credentials <<parameters.cluster>>
+              kubectl set image deployment <<parameters.deployment>> <<parameters.container>>=<<parameters.image>>
+      publish-and-update:
+        description: "Publish and update a deployment's Docker image."
         parameters:
-          version:
+          cluster:
+            description: "The Kubernetes cluster name."
             type: string
-            default: "2.4"
-        docker:
-          - image: maven:3.3.9-jdk-8
-
-commands:
-  hello:
-    description: Greet the user politely
-    parameters:
-      username:
-        type: string
-        description: A name of the user to greet
-    steps:
-      - run: "echo Hello << parameters.username >>"
-
-executors:
-  main-executor:
-    docker:
-      # specify the version you desire here
-      - image: maven:3.3.9-jdk-8
-    working_directory: ~/repo
-
-    environment:
-      APP_TYPE: adapter
-      APP_NAME: avm-mock
-
-jobs:
-  test_publish:
-    executor: main-executor
-    steps:
-      - published_example/hello:
-          username: world2
-  build:
-    executor: main-executor
-    steps:
-      - checkout
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "pom.xml" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-      - run: mvn clean test
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-  docker_image:
-    executor: main-executor
-    steps:
-      - attach_workspace:
-          at: .
-      - setup_remote_docker
-      - run:
-            name: Install Docker client
-            command: |
-              set -x
-              VER="17.03.0-ce"
-              curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
-              tar -xz -C /tmp -f /tmp/docker-$VER.tgz
-              mv /tmp/docker/* /usr/bin
-      - run: docker build -t ${APP_TYPE}-${APP_NAME} .
+          deployment-descriptor:
+            description: A path to a deployment descriptor
+            type: string
+        steps:
+          - run: apt-get install -qq -y gettext
+          - run: |
+              gcloud container clusters get-credentials <<parameters.cluster>>
+              envsubst < <<parameters.deployment-descriptor>> > ${HOME}/patched_k8s.yml
+              cat  ${HOME}/patched_k8s.yml
+              kubectl apply -f ${HOME}/patched_k8s.yml
+              kubectl rollout status deployment ${CIRCLE_PROJECT_REPONAME}
+    jobs:
+      publish-and-rollout-image:
+        description: "Update cluster with new Docker image."
+        machine: true
+        parameters:
+          cluster:
+            description: "The Kubernetes cluster name."
+            type: string
+          deployment:
+            description: "The Kubernetes deployment name."
+            type: string
+          container:
+            description: "The Kubernetes container name."
+            type: string
+          gcloud-service-key:
+            description: The gcloud service key
+            type: env_var_name
+            default: GCLOUD_SERVICE_KEY
+          google-project-id:
+            description: The Google project ID to connect with via the gcloud CLI
+            type: env_var_name
+            default: GOOGLE_PROJECT_ID
+          google-compute-zone:
+            description: The Google compute zone to connect with via the gcloud CLI
+            type: env_var_name
+            default: GOOGLE_COMPUTE_ZONE
+          registry-url:
+            description: The GCR registry URL from ['', us, eu, asia].gcr.io
+            type: string
+            default: gcr.io
+          image:
+            description: A name for your docker image
+            type: string
+          tag:
+            description: A docker image tag
+            type: string
+            default: "latest"
+          path-to-dockerfile:
+            description: The relative path to the Dockerfile to use when building image
+            type: string
+            default: "."
+        steps:
+          - checkout
+          - gcr/gcr-auth:
+              google-project-id: <<parameters.google-project-id>>
+              google-compute-zone: <<parameters.google-compute-zone>>
+          - install
+          - gcr/build-image:
+              registry-url: <<parameters.registry-url>>
+              google-project-id: <<parameters.google-project-id>>
+              image: <<parameters.image>>
+              tag: << parameters.tag >>
+              path-to-dockerfile: <<parameters.path-to-dockerfile>>
+          - gcr/push-image:
+              registry-url: <<parameters.registry-url>>
+              google-project-id: <<parameters.google-project-id>>
+              image: <<parameters.image>>
+              tag: <<parameters.tag>>
+          - rollout-image:
+              cluster: "<<parameters.cluster>>"
+              deployment: "<<parameters.deployment>>"
+              container: "<<parameters.container>>"
+              image: "<<parameters.image>>"
+      publish-and-update-image:
+        description: "Update cluster with new Docker image."
+        machine: true
+        environment:
+          REG_URL: <<parameters.registry-url>>
+          IMAGE_NAME: <<parameters.image-name>>
+          TAG: <<parameters.tag>>
+          G_PROJECT_ID: <<parameters.google-project-id>>
+        parameters:
+          cluster:
+            description: "The Kubernetes cluster name."
+            type: string
+          gcloud-service-key:
+            description: The gcloud service key
+            type: env_var_name
+            default: GCLOUD_SERVICE_KEY
+          google-project-id:
+            description: The Google project ID to connect with via the gcloud CLI
+            type: env_var_name
+            default: GOOGLE_PROJECT_ID
+          google-compute-zone:
+            description: The Google compute zone to connect with via the gcloud CLI
+            type: env_var_name
+            default: GOOGLE_COMPUTE_ZONE
+          registry-url:
+            description: The GCR registry URL from ['', us, eu, asia].gcr.io
+            type: string
+            default: gcr.io
+          image-name:
+            description: A name for your docker image
+            type: env_var_name
+            default: CIRCLE_PROJECT_REPONAME
+          tag:
+            description: A docker image tag
+            type: string
+            default: "latest"
+          path-to-dockerfile:
+            description: The relative path to the Dockerfile to use when building image
+            type: string
+            default: "."
+          deployment-descriptor:
+            description: A path to a deployment descriptor
+            type: string
+            default: "kubernetes-manifests/k8s.yml"
+        steps:
+          - checkout
+          - gcr/gcr-auth:
+              google-project-id: <<parameters.google-project-id>>
+              google-compute-zone: <<parameters.google-compute-zone>>
+          - install
+          - gcr/build-image:
+              registry-url: <<parameters.registry-url>>
+              google-project-id: <<parameters.google-project-id>>
+              image: <<parameters.image-name>>
+              tag: << parameters.tag >>
+              path-to-dockerfile: <<parameters.path-to-dockerfile>>
+          - gcr/push-image:
+              registry-url: <<parameters.registry-url>>
+              google-project-id: <<parameters.google-project-id>>
+              image: <<parameters.image-name>>
+              tag: <<parameters.tag>>
+          - publish-and-update:
+              cluster: "<<parameters.cluster>>"
+              deployment-descriptor: "<<parameters.deployment-descriptor>>"
 workflows:
   version: 2.1
-  build_and_test:
+  deploy-service:
     jobs:
-      - inline_example/my_inline_job:
-          name: hello
-          greeting_name: world
-      - test_publish
-#      - build
-#      - docker_image:
-#          requires:
-#            - build
+      - gck-management/publish-and-update-image:
+          cluster: deployment-cluster-dev
 
 
 
