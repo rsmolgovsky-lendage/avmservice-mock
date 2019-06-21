@@ -61,6 +61,9 @@ orbs:
           tag:
               description: A docker image tag
               type: string
+          rollout-status-timeout-min:
+              description: Time to wait to wait for rollout status update
+              type: integer
         steps:
           - run: |
               echo 'export REG_URL=<< parameters.registry-url >>' >> $BASH_ENV
@@ -71,7 +74,7 @@ orbs:
           - run: envsubst < <<parameters.deployment-descriptor>> > ${HOME}/patched_k8s.yml
           - run: cat  ${HOME}/patched_k8s.yml
           - run: kubectl apply -f ${HOME}/patched_k8s.yml
-          - run: kubectl rollout status deployment ${IMAGE_NAME} --timeout=3m
+          - run: kubectl rollout status deployment ${IMAGE_NAME} --timeout=<<parameters.rollout-status-timeout-min>>m
     jobs:
       publish-and-update-image:
         description: "Update cluster with new Docker image."
@@ -103,7 +106,6 @@ orbs:
           tag:
             description: A docker image tag
             type: string
-            default: "latest"
           path-to-dockerfile:
             description: The relative path to the Dockerfile to use when building image
             type: string
@@ -112,6 +114,10 @@ orbs:
             description: A path to a deployment descriptor
             type: string
             default: "kubernetes-manifests/k8s.yml"
+          rollout-status-timeout-min:
+            description: Time to wait to wait for rollout status update
+            type: integer
+            default: 3
         steps:
           - checkout
           - gcr/gcr-auth:
@@ -136,12 +142,14 @@ orbs:
               google-project-id: ${<<parameters.google-project-id>>}
               image: ${<<parameters.image-name>>}
               tag: <<parameters.tag>>
+              rollout-status-timeout-min: <<parameters.rollout-status-timeout-min>>
 workflows:
   version: 2.1
   deploy-service:
     jobs:
       - gck-management/publish-and-update-image:
           cluster: deployment-cluster-dev
+          tag: latest
 
 
 
