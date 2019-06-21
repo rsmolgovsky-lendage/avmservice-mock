@@ -1,0 +1,113 @@
+# Java Maven CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2.1
+
+orbs:
+  published_example: rsmolgovsky-circleci/test-orb@dev:1
+  inline_example:
+    jobs:
+      my_inline_job:
+        parameters:
+          greeting_name:
+            description:
+            type: string
+        executor: my_inline_executor
+        steps:
+          - my_inline_command:
+              greeting_name: <<parameters.greeting_name>>
+    commands:
+      my_inline_command:
+        parameters:
+          greeting_name:
+            type: string
+        steps:
+           - run: echo "Hello <<parameters.greeting_name>>, from the inline command"
+           - run: echo Project -  ${CIRCLE_PROJECT_REPONAME}
+           - run: echo SHA1 -  ${CIRCLE_SHA1}
+    executors:
+      my_inline_executor:
+        parameters:
+          version:
+            type: string
+            default: "2.4"
+        docker:
+          - image: maven:3.3.9-jdk-8
+
+commands:
+  hello:
+    description: Greet the user politely
+    parameters:
+      username:
+        type: string
+        description: A name of the user to greet
+    steps:
+      - run: "echo Hello << parameters.username >>"
+
+executors:
+  main-executor:
+    docker:
+      # specify the version you desire here
+      - image: maven:3.3.9-jdk-8
+    working_directory: ~/repo
+
+    environment:
+      APP_TYPE: adapter
+      APP_NAME: avm-mock
+
+jobs:
+  test_publish:
+    executor: main-executor
+    steps:
+      - published_example/hello:
+          username: world2
+  build:
+    executor: main-executor
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: mvn clean test
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  docker_image:
+    executor: main-executor
+    steps:
+      - attach_workspace:
+          at: .
+      - setup_remote_docker
+      - run:
+            name: Install Docker client
+            command: |
+              set -x
+              VER="17.03.0-ce"
+              curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+              tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+              mv /tmp/docker/* /usr/bin
+      - run: docker build -t ${APP_TYPE}-${APP_NAME} .
+workflows:
+  version: 2.1
+  build_and_test:
+    jobs:
+      - inline_example/my_inline_job:
+          name: hello
+          greeting_name: world
+      - test_publish
+#      - build
+#      - docker_image:
+#          requires:
+#            - build
+
+
+
