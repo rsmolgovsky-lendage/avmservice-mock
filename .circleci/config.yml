@@ -62,22 +62,16 @@ orbs:
               description: A docker image tag
               type: string
         steps:
-          - run: echo << parameters.registry-url >>
-          - run: echo << parameters.image >>
-          - run: echo << parameters.tag >>
-          - run: echo << parameters.google-project-id >>
           - run: |
               echo 'export REG_URL=<< parameters.registry-url >>' >> $BASH_ENV
               echo 'export IMAGE_NAME=<< parameters.image >>' >> $BASH_ENV
               echo 'export TAG=<< parameters.tag >>' >> $BASH_ENV
               echo 'export G_PROJECT_ID=<< parameters.google-project-id >>' >> $BASH_ENV
-          - run: cat $BASH_ENV
-          - run: echo Values - ${REG_URL}, ${IMAGE_NAME}, ${TAG}, ${G_PROJECT_ID}
           - run: gcloud container clusters get-credentials <<parameters.cluster>>
           - run: envsubst < <<parameters.deployment-descriptor>> > ${HOME}/patched_k8s.yml
           - run: cat  ${HOME}/patched_k8s.yml
           - run: kubectl apply -f ${HOME}/patched_k8s.yml
-          - run: kubectl rollout status deployment ${CIRCLE_PROJECT_REPONAME}
+          - run: kubectl rollout status deployment ${IMAGE_NAME}
     jobs:
       publish-and-update-image:
         description: "Update cluster with new Docker image."
