@@ -87,8 +87,8 @@ orbs:
             default: us.gcr.io
           image-name:
             description: A name for your docker image
-            type: env_var_name
-            default: CIRCLE_PROJECT_REPONAME
+            type: string
+            default: ${CIRCLE_PROJECT_REPONAME}
           tag:
             description: A docker image tag
             type: string
@@ -130,7 +130,7 @@ workflows:
     jobs:
       - gck-management/publish-and-update-image:
           cluster: deployment-cluster-dev
-          image-name: CIRCLE_PROJECT_REPONAME # Understand why the default variable does not work
+
 
 
 
