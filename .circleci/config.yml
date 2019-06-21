@@ -88,7 +88,7 @@ orbs:
           image-name:
             description: A name for your docker image
             type: string
-            default: ${CIRCLE_PROJECT_REPONAME}
+            default: ${CIRCLE_PROJECT_REPONAME} # For some reason environment variable did not work
           tag:
             description: A docker image tag
             type: string
@@ -107,9 +107,6 @@ orbs:
               google-project-id: <<parameters.google-project-id>>
               google-compute-zone: <<parameters.google-compute-zone>>
           - install
-          - run: echo Building <<parameters.image-name>>
-          - run: echo Building <<parameters.google-project-id>>
-          - run: echo Building ${CIRCLE_PROJECT_REPONAME}
           - gcr/build-image:
               registry-url: <<parameters.registry-url>>
               google-project-id: <<parameters.google-project-id>>
