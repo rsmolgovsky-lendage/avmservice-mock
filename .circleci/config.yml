@@ -62,9 +62,9 @@ orbs:
         machine: true
         environment:
           REG_URL: << parameters.registry-url >>
-          IMAGE_NAME: << parameters.image-name >>
+          IMAGE_NAME: ${<< parameters.image-name >>}
           TAG: << parameters.tag >>
-          G_PROJECT_ID: << parameters.google-project-id >>
+          G_PROJECT_ID: ${<< parameters.google-project-id >>}
         parameters:
           cluster:
             description: "The Kubernetes cluster name."
@@ -88,7 +88,7 @@ orbs:
           image-name:
             description: A name for your docker image
             type: string
-            default: ${CIRCLE_PROJECT_REPONAME} # For some reason environment variable did not work
+            default: CIRCLE_PROJECT_REPONAME
           tag:
             description: A docker image tag
             type: string
@@ -109,14 +109,14 @@ orbs:
           - install
           - gcr/build-image:
               registry-url: <<parameters.registry-url>>
-              google-project-id: <<parameters.google-project-id>>
-              image: <<parameters.image-name>>
+              google-project-id: ${<<parameters.google-project-id>>}
+              image: ${<<parameters.image-name>>}
               tag: <<parameters.tag>>
               path-to-dockerfile: <<parameters.path-to-dockerfile>>
           - gcr/push-image:
               registry-url: <<parameters.registry-url>>
-              google-project-id: <<parameters.google-project-id>>
-              image: <<parameters.image-name>>
+              google-project-id: ${<<parameters.google-project-id>>}
+              image: ${<<parameters.image-name>>}
               tag: <<parameters.tag>>
           - publish-and-update:
               cluster: "<<parameters.cluster>>"
