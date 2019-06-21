@@ -63,9 +63,9 @@ orbs:
               type: string
         steps:
           - run: export REG_URL=<< parameters.registry-url >>
-          - run: export IMAGE_NAME=${<< parameters.image >>}
+          - run: export IMAGE_NAME=<< parameters.image >>
           - run: export TAG=<< parameters.tag >>
-          - run: export G_PROJECT_ID=${<< parameters.google-project-id >>}
+          - run: export G_PROJECT_ID=<< parameters.google-project-id >>
           - run: echo Values - ${REG_URL}, ${IMAGE_NAME}, ${TAG}, ${G_PROJECT_ID}
           - run: gcloud container clusters get-credentials <<parameters.cluster>>
           - run: envsubst < <<parameters.deployment-descriptor>> > ${HOME}/patched_k8s.yml
