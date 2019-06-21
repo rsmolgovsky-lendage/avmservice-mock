@@ -84,7 +84,7 @@ orbs:
           registry-url:
             description: The GCR registry URL from ['', us, eu, asia].gcr.io
             type: string
-            default: gcr.io
+            default: us.gcr.io
           image-name:
             description: A name for your docker image
             type: env_var_name
@@ -129,6 +129,7 @@ workflows:
     jobs:
       - gck-management/publish-and-update-image:
           cluster: deployment-cluster-dev
+
 
 
 
