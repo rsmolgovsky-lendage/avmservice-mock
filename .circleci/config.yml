@@ -16,6 +16,7 @@ orbs:
         steps:
           - gcloud/install
           - k8s/install
+          - run: sudo apt-get install -qq -y gettext
       init:
         description: "Initialize the `gcloud` CLI."
         steps:
@@ -49,7 +50,6 @@ orbs:
             description: A path to a deployment descriptor
             type: string
         steps:
-          - run: apt-get install -qq -y gettext
           - run: |
               gcloud container clusters get-credentials <<parameters.cluster>>
               envsubst < <<parameters.deployment-descriptor>> > ${HOME}/patched_k8s.yml
