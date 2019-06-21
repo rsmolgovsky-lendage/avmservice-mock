@@ -50,7 +50,7 @@ orbs:
             description: A path to a deployment descriptor
             type: string
         steps:
-          - run: echo Values: ${REG_URL}, ${IMAGE_NAME}, ${TAG}, ${G_PROJECT_ID}
+          - run: echo Values - ${REG_URL}, ${IMAGE_NAME}, ${TAG}, ${G_PROJECT_ID}
           - run: gcloud container clusters get-credentials <<parameters.cluster>>
           - run: envsubst < <<parameters.deployment-descriptor>> > ${HOME}/patched_k8s.yml
           - run: cat  ${HOME}/patched_k8s.yml
