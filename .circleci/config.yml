@@ -107,7 +107,8 @@ orbs:
               google-project-id: <<parameters.google-project-id>>
               google-compute-zone: <<parameters.google-compute-zone>>
           - install
-          - run Building <<parameters.image-name>>
+          - run: echo Building <<parameters.image-name>>
+          - run: echo Building ${CIRCLE_PROJECT_REPONAME}
           - gcr/build-image:
               registry-url: <<parameters.registry-url>>
               google-project-id: <<parameters.google-project-id>>
