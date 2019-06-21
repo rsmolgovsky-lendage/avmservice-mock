@@ -60,10 +60,10 @@ orbs:
         description: "Update cluster with new Docker image."
         machine: true
         environment:
-          REG_URL: "<<parameters.registry-url>>"
-          IMAGE_NAME: "<<parameters.image-name>>"
-          TAG: "<<parameters.tag>>"
-          G_PROJECT_ID: "<<parameters.google-project-id>>"
+          REG_URL: <<parameters.registry-url>>
+          IMAGE_NAME: <<parameters.image-name>>
+          TAG: <<parameters.tag>>
+          G_PROJECT_ID: <<parameters.google-project-id>>
         parameters:
           cluster:
             description: "The Kubernetes cluster name."
