@@ -9,11 +9,23 @@ orbs:
 
 workflows:
   version: 2.1
-  deploy-service:
+  dev-complete-deploy-service-dev:
     jobs:
       - gck-management/publish-and-update-image:
           cluster: deployment-cluster-dev
           tag: latest-dev
+          filters:
+            branches:
+              ignore: master
+  merge-complete-deploy-service-qa:
+    jobs:
+      - gck-management/publish-and-update-image:
+          cluster: deployment-cluster-qa
+          tag: latest-qa
+          filters:
+            branches:
+              only: master
+
 
 
 
