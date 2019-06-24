@@ -13,7 +13,7 @@ workflows:
     jobs:
       - gck-management/publish-and-update-image:
           cluster: deployment-cluster-dev
-          tag: latest-dev
+          release-type: dev
           filters:
             branches:
               ignore: master
@@ -21,7 +21,7 @@ workflows:
     jobs:
       - gck-management/publish-and-update-image:
           cluster: deployment-cluster-qa
-          tag: latest-qa
+          release-type: qa
           filters:
             branches:
               only: master
