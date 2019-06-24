@@ -11,20 +11,20 @@ workflows:
   version: 2.1
   dev-complete-deploy-service-dev:
     jobs:
-      - gck-management/publish-and-update-image-dev:
-        cluster: deployment-cluster-dev
-        release-type: dev
-        filters:
-          branches:
-            ignore: master
+      - gck-management/publish-and-update-image:
+          cluster: deployment-cluster-dev
+          release-type: dev
+          filters:
+            branches:
+              ignore: master
   merge-complete-deploy-service-qa:
     jobs:
       - gck-management/publish-and-update-image:
-        cluster: deployment-cluster-qa
-        release-type: dev
-        filters:
-          branches:
-            only: master
+          cluster: deployment-cluster-qa
+          release-type: qa
+          filters:
+            branches:
+              only: master
 
 
 
