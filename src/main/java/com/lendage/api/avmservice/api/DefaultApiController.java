@@ -47,7 +47,7 @@ public class DefaultApiController implements DefaultApi {
     @ApiResponses({ @ApiResponse(code = 200, message = "OK", response = AVMResponse.class),
             @ApiResponse(code = 201, message = "Created"), @ApiResponse(code = 400, message = "Error getting the data"),
             @ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
-            @ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Server error") })
+            @ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Server error!") })
     @RequestMapping(value = { "/" }, produces = { "application/json" }, consumes = { "application/json" }, method = {
             RequestMethod.POST })
     public ResponseEntity<AVMResponse> getAvmScoreUsingPOST(
